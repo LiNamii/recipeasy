@@ -1,33 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class AddRecipeScreen extends StatefulWidget {
-  const AddRecipeScreen({super.key});
-
-  @override
-  State<AddRecipeScreen> createState() => _AddRecipeScreenState();
-}
-
-class _AddRecipeScreenState extends State<AddRecipeScreen> {
-  final title = TextEditingController();
-  final desc = TextEditingController();
-
-  Future<void> addRecipe() async {
-    await FirebaseFirestore.instance.collection('recipes').add({
-      'title': title.text.trim(),
-      'description': desc.text.trim(),
-      'createdAt': FieldValue.serverTimestamp(),
-    });
-  }
+class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final email = TextEditingController();
+    final password = TextEditingController();
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFF8F0),
 
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFC107),
-        title: const Text("Nouvelle recette 🍲"),
+        backgroundColor: const Color(0xFF81C784),
+        title: const Text("Créer un compte"),
       ),
 
       body: Padding(
@@ -35,12 +22,14 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
         child: Column(
           children: [
 
+            const SizedBox(height: 20),
+
             TextField(
-              controller: title,
+              controller: email,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFFFF3E0),
-                labelText: "Titre",
+                labelText: "Email",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
@@ -50,12 +39,12 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
             const SizedBox(height: 15),
 
             TextField(
-              controller: desc,
-              maxLines: 4,
+              controller: password,
+              obscureText: true,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFFE8F5E9),
-                labelText: "Description",
+                labelText: "Mot de passe",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
@@ -69,14 +58,15 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                 backgroundColor: const Color(0xFF81C784),
                 minimumSize: const Size(double.infinity, 50),
               ),
-
               onPressed: () async {
-                await addRecipe(); // 🔥 ENVOI FIREBASE
+                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                  email: email.text.trim(),
+                  password: password.text.trim(),
+                );
 
-                Navigator.pop(context); // retour home
+                Navigator.pop(context);
               },
-
-              child: const Text("Ajouter"),
+              child: const Text("Créer compte"),
             ),
           ],
         ),
